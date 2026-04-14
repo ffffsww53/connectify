@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Connectify - Sua Rede Social</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Container principal */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Cards e efeitos */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Navegação */
+        .nav-bar {
+            background: white;
+            border-radius: 60px;
+            padding: 12px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: all 0.3s;
+            color: #4a5568;
+        }
+
+        .nav-btn:hover {
+            background: #f7fafc;
+            transform: scale(1.05);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Botões */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Post */
+        .post-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post-image {
+            border-radius: 16px;
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            margin: 12px 0;
+        }
+
+        /* Inputs */
+        .input-modern {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 12px 16px;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-modern:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        /* Badges */
+        .admin-badge {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+            font-weight: 600;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 12px;
+            }
+            
+            .nav-btn span {
+                display: none;
+            }
+            
+            .nav-btn i {
+                font-size: 20px;
+            }
+            
+            .nav-btn {
+                padding: 8px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Página de Login -->
+        <div id="loginPage" class="page active">
+            <div class="row justify-content-center">
+                <div class="col-md-5 col-11">
+                    <div class="glass-card" style="padding: 40px;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <i class="fas fa-users" style="font-size: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                            <h1 class="logo" style="font-size: 32px; margin-top: 10px;">Connectify</h1>
+                            <p style="color: #718096;">Conecte-se com o mundo</p>
+                        </div>
+                        
+                        <div id="loginError" class="alert alert-danger d-none" style="border-radius: 16px;"></div>
+                        
+                        <input type="email" id="loginEmail" class="input-modern w-100 mb-3" placeholder="seu@email.com" value="admin@connectify.com">
+                        <input type="password" id="loginPassword" class="input-modern w-100 mb-3" placeholder="Sua senha" value="Admin@123">
+                        
+                        <button class="btn-primary-custom w-100 mb-3" onclick="login()">
+                            <i class="fas fa-arrow-right-to-bracket"></i> Entrar
+                        </button>
+                        
+                        <hr style="margin: 20px 0;">
+                        
+                        <p style="text-align: center; color: #718096; font-size: 14px; margin-bottom: 15px;">
+                            <i class="fas fa-info-circle"></i> Conta demo: admin@connectify.com / Admin@123
+                        </p>
+                        
+                        <button class="btn btn-outline-primary w-100" onclick="showRegister()" style="border-radius: 40px; border-color: #667eea; color: #667eea;">
+                            <i class="fas fa-user-plus"></i> Criar nova conta
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Página de Registro -->
+        <div id="registerPage" class="page">
+            <div class="row justify-content-center">
+                <div class="col-md-5 col-11">
+                    <div class="glass-card" style="padding: 40px;">
+                        <h2 style="text-align: center; margin-bottom: 30px; color: #2d3748;">Criar conta</h2>
+                        
+                        <div id="registerError" class="alert alert-danger d-none" style="border-radius: 16px;"></div>
+                        
+                        <input type="text" id="regName" class="input-modern w-100 mb-3" placeholder="Nome completo">
+                        <input type="email" id="regEmail" class="input-modern w-100 mb-3" placeholder="Email">
+                        <input type="password" id="regPassword" class="input-modern w-100 mb-3" placeholder="Senha">
+                        
+                        <button class="btn-primary-custom w-100 mb-3" onclick="register()">
+                            <i class="fas fa-check-circle"></i> Cadastrar
+                        </button>
+                        
+                        <button class="btn btn-link w-100" onclick="showLogin()" style="color: #667eea;">
+                            ← Voltar para o login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Menu de Navegação (aparece após login) -->
+        <div id="mainNav" style="display: none;">
+            <div class="nav-bar d-flex justify-content-between align-items-center">
+                <h2 class="logo mb-0">Connectify</h2>
+                <div class="d-flex gap-2">
+                    <button class="nav-btn" onclick="showPage('feed')">
+                        <i class="fas fa-home"></i> <span>Início</span>
+                    </button>
+                    <button class="nav-btn" onclick="showPage('profile')">
+                        <i class="fas fa-user"></i> <span>Perfil</span>
+                    </button>
+                    <button class="nav-btn" id="adminNavBtn" onclick="showPage('admin')" style="display: none;">
+                        <i class="fas fa-shield-alt"></i> <span>Admin</span>
+                    </button>
+                    <button class="nav-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feed -->
+        <div id="feedPage" class="page">
+            <div class="row">
+                <div class="col-lg-3 mb-4">
+                    <div class="glass-card" style="padding: 20px; text-align: center;">
+                        <img id="profileAvatarSide" src="" class="avatar" style="width: 80px; height: 80px; margin-bottom: 12px;">
+                        <h5 id="profileNameSide">Carregando...</h5>
+                        <p class="text-muted small" id="profileEmailSide"></p>
+                        <hr>
+                        <div class="row">
+                            <div class="col-4">
+                                <h6 id="postCountSide">0</h6>
+                                <small>Posts</small>
+                            </div>
+                            <div class="col-4">
+                                <h6 id="followersCountSide">0</h6>
+                                <small>Seguidores</small>
+                            </div>
+                            <div class="col-4">
+                                <h6 id="followingCountSide">0</h6>
+                                <small>Seguindo</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="glass-card" style="padding: 20px; margin-bottom: 20px;">
+                        <div class="d-flex gap-3 mb-3">
+                            <img id="currentUserAvatar" src="" class="avatar">
+                            <textarea id="newPostContent" class="input-modern w-100" rows="2" placeholder="No que você está pensando? 🌟"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <label class="btn btn-light" style="border-radius: 40px; cursor: pointer;">
+                                <i class="fas fa-image" style="color: #667eea;"></i> Foto
+                                <input type="file" id="postImage" accept="image/*" style="display: none;" onchange="previewImage(this)">
+                            </label>
+                            <button class="btn-primary-custom" onclick="createPost()" style="padding: 8px 24px;">
+                                <i class="fas fa-paper-plane"></i> Publicar
+                            </button>
+                        </div>
+                        <div id="imagePreview" style="display: none; margin-top: 12px;">
+                            <img id="previewImg" src="" style="max-width: 100%; border-radius: 12px;">
+                        </div>
+                    </div>
+                    
+                    <div id="postsContainer"></div>
+                </div>
+                
+                <div class="col-lg-3 mb-4">
+                    <div class="glass-card" style="padding: 20px; position: sticky; top: 100px;">
+                        <h6><i class="fas fa-users"></i> Sugestões</h6>
+                        <div id="suggestionsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Perfil -->
+        <div id="profilePage" class="page">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="glass-card" style="overflow: hidden;">
+                        <div style="height: 150px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <div style="text-align: center; margin-top: -50px; padding: 20px;">
+                            <img id="profileViewAvatar" src="" class="avatar" style="width: 100px; height: 100px; border: 4px solid white;">
+                            <h3 id="profileViewName" style="margin-top: 12px;"></h3>
+                            <p class="text-muted" id="profileViewEmail"></p>
+                            <p id="profileViewBio">✨ Apaixonado por tecnologia e conexões</p>
+                            <button class="btn-primary-custom" onclick="showPage('feed')" style="padding: 8px 24px;">
+                                <i class="fas fa-stream"></i> Ver Feed
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h5><i class="fas fa-edit"></i> Meus Posts</h5>
+                        <div id="userPostsContainer"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPage" class="page">
+            <div class="glass-card" style="padding: 30px;">
+                <h3 style="margin-bottom: 20px;">
+                    <i class="fas fa-shield-alt" style="color: #667eea;"></i> Painel Administrativo
+                </h3>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="glass-card" style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                            <h2 id="adminTotalUsers">0</h2>
+                            <p>Total de Usuários</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="glass-card" style="padding: 20px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                            <h2 id="adminTotalPosts">0</h2>
+                            <p>Total de Posts</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="showAdminTab('users')" style="border-radius: 40px 40px 0 0;">
+                            <i class="fas fa-users"></i> Usuários
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="showAdminTab('posts')" style="border-radius: 40px 40px 0 0;">
+                            <i class="fas fa-newspaper"></i> Posts
+                        </button>
+                    </li>
+                </ul>
+                
+                <div id="adminUsersList"></div>
+                <div id="adminPostsList" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banco de dados local
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('connectify_users')) || [];
+        let posts = JSON.parse(localStorage.getItem('connectify_posts')) || [];
+        let likes = JSON.parse(localStorage.getItem('connectify_likes')) || [];
+        let comments = JSON.parse(localStorage.getItem('connectify_comments')) || [];
+        let follows = JSON.parse(localStorage.getItem('connectify_follows')) || [];
+
+        // Inicializar dados demo
+        if (users.length === 0) {
+            users = [
+                { id: 1, name: 'Admin Connectify', email: 'admin@connectify.com', password: 'Admin@123', avatar: 'https://ui-avatars.com/api/?background=667eea&color=fff&name=Admin', bio: 'Administrador do sistema', role: 'admin', createdAt: new Date().toISOString() },
+                { id: 2, name: 'Ana Silva', email: 'ana@email.com', password: '123456', avatar: 'https://ui-avatars.com/api/?background=f093fb&color=fff&name=Ana', bio: 'Designer & Criadora de conteúdo', role: 'user', createdAt: new Date().toISOString() },
+                { id: 3, name: 'Carlos Santos', email: 'carlos@email.com', password: '123456', avatar: 'https://ui-avatars.com/api/?background=4facfe&color=fff&name=Carlos', bio: 'Desenvolvedor Full Stack', role: 'user', createdAt: new Date().toISOString() },
+                { id: 4, name: 'Mariana Costa', email: 'mariana@email.com', password: '123456', avatar: 'https://ui-avatars.com/api/?background=43e97b&color=fff&name=Mariana', bio: 'Marketing Digital', role: 'user', createdAt: new Date().toISOString() }
+            ];
+            saveUsers();
+        }
+
+        if (posts.length === 0) {
+            posts = [
+                { id: 1, userId: 2, content: 'Começando o dia com muito café e código! ☕💻', image: 'https://picsum.photos/500/300?random=1', createdAt: new Date().toISOString() },
+                { id: 2, userId: 3, content: 'Hoje é dia de aprender algo novo! Quem mais está estudando? 🚀', image: 'https://picsum.photos/500/300?random=2', createdAt: new Date().toISOString() },
+                { id: 3, userId: 4, content: 'A vida é feita de pequenas conquistas. Celebrem cada passo! 🌟', image: '', createdAt: new Date().toISOString() },
+                { id: 4, userId: 1, content: 'Bem-vindos ao Connectify! Uma rede social feita com muito carinho para vocês ❤️', image: 'https://picsum.photos/500/300?random=4', createdAt: new Date().toISOString() }
+            ];
+            savePosts();
+        }
+
+        function saveUsers() { localStorage.setItem('connectify_users', JSON.stringify(users)); }
+        function savePosts() { localStorage.setItem('connectify_posts', JSON.stringify(posts)); }
+        function saveLikes() { localStorage.setItem('connectify_likes', JSON.stringify(likes)); }
+        function saveComments() { localStorage.setItem('connectify_comments', JSON.stringify(comments)); }
+        function saveFollows() { localStorage.setItem('connectify_follows', JSON.stringify(follows)); }
+
+        function showPage(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            if (page === 'feed') document.getElementById('feedPage').classList.add('active');
+            else if (page === 'profile') {
+                document.getElementById('profilePage').classList.add('active');
+                loadProfile();
+            }
+            else if (page === 'admin') {
+                document.getElementById('adminPage').classList.add('active');
+                loadAdminPanel();
+            }
+            
+            if (page === 'feed') loadFeed();
+        }
+
+        function showRegister() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('registerPage').classList.add('active');
+        }
+
+        function showLogin() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('loginPage').classList.add('active');
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            
+            if (!name || !email || !password) {
+                showError('registerError', 'Preencha todos os campos');
+                return;
+            }
+            
+            if (users.find(u => u.email === email)) {
+                showError('registerError', 'Email já cadastrado');
+                return;
+            }
+            
+            const newUser = {
+                id: users.length + 1,
+                name, email, password,
+                avatar: `https://ui-avatars.com/api/?background=667eea&color=fff&name=${encodeURIComponent(name)}`,
+                bio: 'Novo por aqui! ✨',
+                role: 'user',
+                createdAt: new Date().toISOString()
+            };
+            users.push(newUser);
+            saveUsers();
+            alert('✅ Conta criada com sucesso! Faça login.');
+            showLogin();
+        }
+
+        function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('connectify_currentUser', JSON.stringify(currentUser));
+                
+                // Atualizar UI
+                document.getElementById('profileNameSide').innerText = currentUser.name;
+                document.getElementById('profileEmailSide').innerText = currentUser.email;
+                document.getElementById('profileAvatarSide').src = currentUser.avatar;
+                document.getElementById('currentUserAvatar').src = currentUser.avatar;
+                
+                if (currentUser.role === 'admin') {
+                    document.getElementById('adminNavBtn').style.display = 'flex';
+                }
+                
+                document.getElementById('mainNav').style.display = 'block';
+                showPage('feed');
+            } else {
+                showError('loginError', 'Email ou senha inválidos');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('connectify_currentUser');
+            document.getElementById('mainNav').style.display = 'none';
+            document.getElementById('adminNavBtn').style.display = 'none';
+            showLogin();
+        }
+
+        function showError(elementId, message) {
+            const errorDiv = document.getElementById(elementId);
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            errorDiv.classList.remove('d-none');
+            setTimeout(() => errorDiv.classList.add('d-none'), 3000);
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function createPost() {
+            const content = document.getElementById('newPostContent').value;
+            if (!content.trim()) {
+                alert('Digite algo para publicar!');
+                return;
+            }
+            
+            let imageUrl = '';
+            const imageFile = document.getElementById('postImage').files[0];
+            if (imageFile) {
+                imageUrl = URL.createObjectURL(imageFile);
+            }
+            
+            posts.unshift({
+                id: posts.length + 1,
+                userId: currentUser.id,
+                content: content,
+                image: imageUrl,
+                createdAt: new Date().toISOString()
+            });
+            savePosts();
+            
+            document.getElementById('newPostContent').value = '';
+            document.getElementById('postImage').value = '';
+            document.getElementById('imagePreview').style.display = 'none';
+            loadFeed();
+        }
+
+        function loadFeed() {
+            const feedPosts = [...posts].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const container = document.getElementById('postsContainer');
+            
+            container.innerHTML = feedPosts.map(post => {
+                const user = users.find(u => u.id === post.userId);
+                const postLikes = likes.filter(l => l.postId === post.id);
+                const postComments = comments.filter(c => c.postId === post.id);
+                const userLiked = likes.some(l => l.postId === post.id && l.userId === currentUser?.id);
+                const timeAgo = getTimeAgo(new Date(post.createdAt));
+                
+                return `
+                    <div class="glass-card post-card">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="${user?.avatar}" class="avatar me-2">
+                            <div>
+                                <strong>${user?.name}</strong> ${user?.role === 'admin' ? '<span class="admin-badge">Admin</span>' : ''}
+                                <small class="text-muted d-block">${timeAgo}</small>
+                            </div>
+                        </div>
+                        <p style="line-height: 1.6;">${post.content}</p>
+                        ${post.image ? `<img src="${post.image}" class="post-image">` : ''}
+                        <div class="d-flex gap-3 mt-3 pt-2 border-top">
+                            <button class="btn btn-light btn-sm" onclick="toggleLike(${post.id})" style="border-radius: 40px;">
+                                <i class="fa-${userLiked ? 'solid' : 'regular'} fa-heart" style="color: ${userLiked ? '#e53e3e' : '#718096'}"></i> ${postLikes.length}
+                            </button>
+                            <button class="btn btn-light btn-sm" onclick="toggleComments(${post.id})" style="border-radius: 40px;">
+                                <i class="fa-regular fa-comment"></i> ${postComments.length}
+                            </button>
+                        </div>
+                        <div id="comments-${post.id}" style="display: none; margin-top: 15px;">
+                            <div id="commentsList-${post.id}" class="mb-2">
+                                ${postComments.map(c => {
+                                    const commentUser = users.find(u => u.id === c.userId);
+                                    return `
+                                        <div class="d-flex gap-2 mb-2">
+                                            <img src="${commentUser?.avatar}" style="width: 32px; height: 32px; border-radius: 50%;">
+                                            <div style="background: #f7fafc; padding: 8px 12px; border-radius: 16px; flex: 1;">
+                                                <small><strong>${commentUser?.name}</strong></small>
+                                                <p class="small mb-0">${c.content}</p>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                            <div class="d-flex gap-2">
+                                <img src="${currentUser?.avatar}" style="width: 32px; height: 32px; border-radius: 50%;">
+                                <input type="text" class="input-modern" id="commentInput-${post.id}" placeholder="Escreva um comentário..." style="flex: 1;">
+                                <button class="btn-primary-custom" onclick="addComment(${post.id})" style="padding: 8px 16px;">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            updateCounts();
+            loadSuggestions();
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'agora mesmo';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} min atrás`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} h atrás`;
+            const days = Math.floor(hours / 24);
+            return `${days} d atrás`;
+        }
+
+        function toggleLike(postId) {
+            const existing = likes.find(l => l.postId === postId && l.userId === currentUser.id);
+            if (existing) {
+                likes = likes.filter(l => !(l.postId === postId && l.userId === currentUser.id));
+            } else {
+                likes.push({ id: likes.length + 1, postId, userId: currentUser.id });
+            }
+            saveLikes();
+            loadFeed();
+        }
+
+        function toggleComments(postId) {
+            const div = document.getElementById(`comments-${postId}`);
+            div.style.display = div.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addComment(postId) {
+            const input = document.getElementById(`commentInput-${postId}`);
+            const content = input.value.trim();
+            if (!content) return;
+            
+            comments.push({
+                id: comments.length + 1,
+                postId,
+                userId: currentUser.id,
+                content,
+                createdAt: new Date().toISOString()
+            });
+            saveComments();
+            input.value = '';
+            loadFeed();
+        }
+
+        function loadProfile() {
+            document.getElementById('profileViewName').innerText = currentUser.name;
+            document.getElementById('profileViewEmail').innerText = currentUser.email;
+            document.getElementById('profileViewAvatar').src = currentUser.avatar;
+            
+            const userPosts = posts.filter(p => p.userId === currentUser.id);
+            const container = document.getElementById('userPostsContainer');
+            container.innerHTML = userPosts.map(post => `
+                <div class="glass-card" style="padding: 20px; margin-bottom: 12px;">
+                    <p>${post.content}</p>
+                    ${post.image ? `<img src="${post.image}" style="max-width: 100%; border-radius: 12px; margin-top: 8px;">` : ''}
+                    <small class="text-muted">${new Date(post.createdAt).toLocaleString()}</small>
+                </div>
+            `).join('');
+            
+            updateCounts();
+        }
+
+        function updateCounts() {
+            const userPosts = posts.filter(p => p.userId === currentUser?.id);
+            document.getElementById('postCountSide').innerText = userPosts.length;
+            document.getElementById('followersCountSide').innerText = follows.filter(f => f.followingId === currentUser?.id).length;
+            document.getElementById('followingCountSide').innerText = follows.filter(f => f.followerId === currentUser?.id).length;
+        }
+
+        function loadSuggestions() {
+            const suggestions = users.filter(u => u.id !== currentUser?.id).slice(0, 3);
+            document.getElementById('suggestionsContainer').innerHTML = suggestions.map(u => `
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <img src="${u.avatar}" class="avatar" style="width: 40px; height: 40px;">
+                    <div>
+                        <strong style="font-size: 14px;">${u.name}</strong>
+                        <small class="text-muted d-block">${u.bio.substring(0, 30)}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadAdminPanel() {
+            if (!currentUser || currentUser.role !== 'admin') return;
+            document.getElementById('adminTotalUsers').innerText = users.length;
+            document.getElementById('adminTotalPosts').innerText = posts.length;
+            showAdminTab('users');
+        }
+
+        function showAdminTab(tab) {
+            if (tab === 'users') {
+                document.getElementById('adminUsersList').style.display = 'block';
+                document.getElementById('adminPostsList').style.display = 'none';
+                
+                const table = `
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Avatar</th><th>Nome</th><th>Email</th><th>Role</th><th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => `
+                                <tr>
+                                    <td>${u.id}</td>
+                                    <td><img src="${u.avatar}" style="width: 40px; height: 40px; border-radius: 50%;"></td>
+                                    <td>${u.name}</td>
+                                    <td>${u.email}</td>
+                                    <td><span class="badge ${u.role === 'admin' ? 'bg-danger' : 'bg-secondary'}">${u.role}</span></td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" onclick="adminDeleteUser(${u.id})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                        ${u.role !== 'admin' ? `<button class="btn btn-warning btn-sm" onclick="adminMakeAdmin(${u.id})">
+                                            <i class="fas fa-crown"></i>
+                                        </button>` : ''}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('adminUsersList').innerHTML = table;
+            } else {
+                document.getElementById('adminUsersList').style.display = 'none';
+                document.getElementById('adminPostsList').style.display = 'block';
+                
+                const table = `
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>Autor</th><th>Conteúdo</th><th>Data</th><th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${posts.map(p => {
+                                const user = users.find(u => u.id === p.userId);
+                                return `
+                                    <tr>
+                                        <td>${p.id}</td>
+                                        <td>${user?.name}</td>
+                                        <td>${p.content.substring(0, 50)}...</td>
+                                        <td>${new Date(p.createdAt).toLocaleDateString()}</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" onclick="adminDeletePost(${p.id})">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+                document.getElementById('adminPostsList').innerHTML = table;
+            }
+        }
+
+        function adminDeleteUser(userId) {
+            if (confirm('⚠️ Tem certeza que deseja excluir este usuário?')) {
+                users = users.filter(u => u.id !== userId);
+                posts = posts.filter(p => p.userId !== userId);
+                comments = comments.filter(c => c.userId !== userId);
+                likes = likes.filter(l => l.userId !== userId);
+                saveUsers(); savePosts(); saveComments(); saveLikes();
+                loadAdminPanel();
+                alert('✅ Usuário excluído com sucesso!');
+            }
+        }
+
+        function adminMakeAdmin(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                user.role = 'admin';
+                saveUsers();
+                loadAdminPanel();
+                alert('👑 Usuário agora é administrador!');
+            }
+        }
+
+        function adminDeletePost(postId) {
+            if (confirm('⚠️ Tem certeza que deseja excluir este post?')) {
+                posts = posts.filter(p => p.id !== postId);
+                comments = comments.filter(c => c.postId !== postId);
+                likes = likes.filter(l => l.postId !== postId);
+                savePosts(); saveComments(); saveLikes();
+                loadAdminPanel();
+                alert('✅ Post excluído com sucesso!');
+                if (document.getElementById('feedPage').classList.contains('active')) loadFeed();
+            }
+        }
+
+        // Inicializar
+        const savedUser = localStorage.getItem('connectify_currentUser');
+        if (savedUser) {
+            currentUser = JSON.parse(savedUser);
+            if (currentUser) {
+                document.getElementById('profileNameSide').innerText = currentUser.name;
+                document.getElementById('profileEmailSide').innerText = currentUser.email;
+                document.getElementById('profileAvatarSide').src = currentUser.avatar;
+                document.getElementById('currentUserAvatar').src = currentUser.avatar;
+                if (currentUser.role === 'admin') document.getElementById('adminNavBtn').style.display = 'flex';
+                document.getElementById('mainNav').style.display = 'block';
+                showPage('feed');
+            }
+        }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</body>
+</html>
